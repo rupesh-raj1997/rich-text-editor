@@ -9,7 +9,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tailwindcss/typography": "^0.5.16",
     "@tailwindcss/vite": "^4.1.11",
+    "@tiptap/extension-bubble-menu": "^2.25.0",
+    "@tiptap/extension-color": "^2.24.2",
+    "@tiptap/extension-floating-menu": "^2.25.0",
+    "@tiptap/extension-highlight": "^2.24.2",
+    "@tiptap/extension-image": "^2.25.0",
+    "@tiptap/extension-link": "^2.24.2",
+    "@tiptap/extension-mention": "^2.25.0",
+    "@tiptap/extension-table": "^2.24.2",
+    "@tiptap/extension-text-style": "^2.24.2",
     "@tiptap/extension-underline": "^2.24.1",
     "@tiptap/pm": "^2.24.0",
     "@tiptap/starter-kit": "^2.24.0",
@@ -22,7 +32,8 @@
     "reka-ui": "^2.3.2",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.11",
-    "vue": "^3.5.17"
+    "vue": "^3.5.17",
+    "vue-tippy": "^6.7.1"
   },
   "devDependencies": {
     "@types/node": "^24.0.10",
