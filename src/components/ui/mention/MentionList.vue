@@ -12,45 +12,24 @@
     </div>
 </template>
 
+<script>
+export default {
+    name: 'MentionList',
+}
+</script>
+
 <script setup lang="ts">
-import { ref, defineProps, watchEffect } from 'vue'
+import { ref } from 'vue';
+
 
 const props = defineProps({
-    items: {
-        type: Array,
-        required: true,
-    },
-
-    command: {
-        type: Function,
-        required: true,
-    },
-});
+    items: { type: Array, required: true },
+    command: { type: Function, required: true },
+})
 
 const selectedIndex = ref(0);
 
-watchEffect(() => {
-    if (props.items.length) selectedIndex.value = 0;
-});
-
-function upHandler() {
-    selectedIndex.value = ((selectedIndex.value + props.items.length) - 1) % props.items.length
-}
-
-function downHandler() {
-    selectedIndex.value = (selectedIndex.value + 1) % props.items.length
-}
-
-function enterHandler() {
-    selectItem(selectedIndex.value)
-}
-
-function selectItem(index: number) {
-    const item = props.items[index]
-    if (item) props.command({ id: item })
-}
-
-function onKeyDown(event: KeyboardEvent) {
+const onKeyDown = (event: KeyboardEvent) => {
     if (event.key === 'ArrowUp') {
         upHandler()
         return true
@@ -65,16 +44,34 @@ function onKeyDown(event: KeyboardEvent) {
         enterHandler()
         return true
     }
-
-    return false
 }
+
+
+const selectItem = (index: number) => {
+    const item = props.items[index]
+    if (item) props.command({ id: item })
+};
+
+const upHandler = () => {
+    selectedIndex.value = ((selectedIndex.value + props.items.length) - 1) % props.items.length
+};
+
+const downHandler = () => {
+    selectedIndex.value = (selectedIndex.value + 1) % props.items.length
+};
+
+const enterHandler = () => {
+    selectItem(selectedIndex.value)
+};
 
 
 </script>
 
+
+
 <style lang="scss">
 /* Dropdown menu */
-.dropdown-menu {
+.mention .dropdown-menu {
     background: var(--white);
     border: 1px solid var(--gray-1);
     border-radius: 0.7rem;

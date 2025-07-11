@@ -97,7 +97,8 @@ import css from 'highlight.js/lib/languages/css'
 import js from 'highlight.js/lib/languages/javascript'
 import ts from 'highlight.js/lib/languages/typescript'
 import xml from 'highlight.js/lib/languages/xml'
-
+import Mention from '@tiptap/extension-mention'
+import suggestion from './suggestion'
 const lowlight = createLowlight(all)
 lowlight.register('html', xml)
 lowlight.register('css', css)
@@ -139,6 +140,10 @@ const editor = useEditor({
     CodeBlockLowlight.configure({
       lowlight,
       defaultLanguage: 'ts'
+    }),
+    Mention.configure({
+      HTMLAttributes: { class: 'mention' },
+      suggestion
     })
   ],
   onSelectionUpdate({ editor }) {
