@@ -1,104 +1,70 @@
 <template>
-    <div class="dropdown-menu">
+    <div class="flex flex-col rounded gap-1 bg-gray-100">
         <template v-if="items.length">
-            <button :class="{ 'is-selected': index === selectedIndex }" v-for="(item, index) in items" :key="index"
+            <button class="hover:bg-amber-100 hover:cursor-pointer px-2"
+                :class="{ 'bg-amber-100': index === selectedIndex }" v-for="(item, index) in items" :key="index"
                 @click="selectItem(index)">
                 {{ item }}
             </button>
         </template>
-        <div class="item" v-else>
-            No result
-        </div>
+        <div class="item" v-else>Not Found</div>
     </div>
 </template>
 
 <script>
 export default {
-    name: 'MentionList',
+    props: {
+        items: {
+            type: Array,
+            required: true,
+        },
+
+        command: {
+            type: Function,
+            required: true,
+        },
+    },
+    data() {
+        return {
+            selectedIndex: 0,
+        }
+    },
+    watch: {
+        items() {
+            this.selectedIndex = 0
+        },
+    },
+    methods: {
+        onKeyDown({ event }) {
+            if (event.key === 'ArrowUp') {
+                this.upHandler()
+                return true
+            }
+            if (event.key === 'ArrowDown') {
+                this.downHandler()
+                return true
+            }
+            if (event.key === 'Enter') {
+                this.enterHandler()
+                return true
+            }
+            return false
+        },
+        upHandler() {
+            this.selectedIndex = (this.selectedIndex + this.items.length - 1) % this.items.length
+        },
+        downHandler() {
+            this.selectedIndex = (this.selectedIndex + 1) % this.items.length
+        },
+        enterHandler() {
+            this.selectItem(this.selectedIndex)
+        },
+        selectItem(index) {
+            const item = this.items[index]
+            if (item) {
+                this.command({ id: item })
+            }
+        },
+    },
 }
 </script>
-
-<script setup lang="ts">
-import { ref } from 'vue';
-
-
-const props = defineProps({
-    items: { type: Array, required: true },
-    command: { type: Function, required: true },
-})
-
-const selectedIndex = ref(0);
-
-const onKeyDown = (event: KeyboardEvent) => {
-    if (event.key === 'ArrowUp') {
-        upHandler()
-        return true
-    }
-
-    if (event.key === 'ArrowDown') {
-        downHandler()
-        return true
-    }
-
-    if (event.key === 'Enter') {
-        enterHandler()
-        return true
-    }
-}
-
-
-const selectItem = (index: number) => {
-    const item = props.items[index]
-    if (item) props.command({ id: item })
-};
-
-const upHandler = () => {
-    selectedIndex.value = ((selectedIndex.value + props.items.length) - 1) % props.items.length
-};
-
-const downHandler = () => {
-    selectedIndex.value = (selectedIndex.value + 1) % props.items.length
-};
-
-const enterHandler = () => {
-    selectItem(selectedIndex.value)
-};
-
-
-</script>
-
-
-
-<style lang="scss">
-/* Dropdown menu */
-.mention .dropdown-menu {
-    background: var(--white);
-    border: 1px solid var(--gray-1);
-    border-radius: 0.7rem;
-    box-shadow: var(--shadow);
-    display: flex;
-    flex-direction: column;
-    gap: 0.1rem;
-    overflow: auto;
-    padding: 0.4rem;
-    position: relative;
-
-    button {
-        align-items: center;
-        background-color: transparent;
-        display: flex;
-        gap: 0.25rem;
-        text-align: left;
-        width: 100%;
-
-        &:hover,
-        &:hover.is-selected {
-            background-color: var(--gray-3);
-        }
-
-        &.is-selected {
-            background-color: var(--gray-2);
-        }
-    }
-}
-</style>

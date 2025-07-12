@@ -1,75 +1,51 @@
-import { VueRenderer } from '@tiptap/vue-3'
-import tippy, { Instance, Props as TippyProps } from 'tippy.js'
+import { Editor, posToDOMRect, VueRenderer } from "@tiptap/vue-3"
+import { computePosition, flip, shift } from '@floating-ui/dom'
 
-import { MentionList } from '@/components/ui/mention'
-import type { SuggestionProps } from '@tiptap/suggestion'
+const USERS = [
+    "Lea Thompson",
+    "Cyndi Lauper",
+    "Tom Cruise",
+    "Madonna",
+    "Jerry Hall",
+    "Joan Collins",
+    "Winona Ryder",
+    "Christina Applegate",
+    "Alyssa Milano",
+    "Molly Ringwald",
+    "Ally Sheedy",
+    "Debbie Harry",
+    "Olivia Newton-John",
+    "Elton John",
+    "Michael J. Fox",
+    "Axl Rose",
+    "Emilio Estevez",
+    "Ralph Macchio",
+    "Rob Lowe",
+    "Jennifer Grey",
+    "Mickey Rourke",
+    "John Cusack",
+    "Matthew Broderick",
+    "Justine Bateman",
+    "Lisa Bonet"
+]
 
-interface ItemProps {
-    query: string
+export const mentionSuggest = ({ query }: { query: string }) => {
+    return USERS.filter(user => user.toLowerCase().startsWith(query.toLowerCase()))
 }
 
-export default {
-    items: ({ query }: ItemProps): string[] => {
-        return [
-            'Lea Thompson', 'Cyndi Lauper', 'Tom Cruise', 'Madonna', 'Jerry Hall', 'Joan Collins', 'Winona Ryder',
-            'Christina Applegate', 'Alyssa Milano', 'Molly Ringwald', 'Ally Sheedy', 'Debbie Harry',
-            'Olivia Newton-John', 'Elton John', 'Michael J. Fox', 'Axl Rose', 'Emilio Estevez', 'Ralph Macchio',
-            'Rob Lowe', 'Jennifer Grey', 'Mickey Rourke', 'John Cusack', 'Matthew Broderick',
-            'Justine Bateman', 'Lisa Bonet',
-        ].filter(item => item.toLowerCase().startsWith(query.toLowerCase())).slice(0, 5)
-    },
+export const updatePosition = (editor: Editor, element: HTMLElement) => {
+    const virtualElement = {
+        getBoundingClientRect: () => posToDOMRect(editor.view, editor.state.selection.from, editor.state.selection.to),
+    }
 
-    render: () => {
-        let component: VueRenderer | null = null
-        let popup: Instance[] = []
-
-        return {
-            onStart: (props: SuggestionProps) => {
-                component = new VueRenderer(MentionList, {
-                    props,
-                    editor: props.editor,
-                })
-
-                if (!props.clientRect) {
-                    return
-                }
-
-                popup = tippy('body', {
-                    getReferenceClientRect: props.clientRect,
-                    appendTo: () => document.body,
-                    content: component.element,
-                    showOnCreate: true,
-                    interactive: true,
-                    trigger: 'manual',
-                    placement: 'bottom-start',
-                })
-            },
-
-            onUpdate(props: SuggestionProps) {
-                component?.updateProps(props)
-
-                if (!props.clientRect) {
-                    return
-                }
-
-                popup[0]?.setProps({
-                    getReferenceClientRect: props.clientRect,
-                } as Partial<TippyProps>)
-            },
-
-            onKeyDown(props: SuggestionProps) {
-                if (props.event.key === 'Escape') {
-                    popup[0]?.hide()
-                    return true
-                }
-
-                return component?.ref?.onKeyDown?.(props)
-            },
-
-            onExit() {
-                popup[0]?.destroy()
-                component?.destroy()
-            },
-        }
-    },
+    computePosition(virtualElement, element, {
+        placement: 'bottom-start',
+        strategy: 'absolute',
+        middleware: [shift(), flip()],
+    }).then(({ x, y, strategy }) => {
+        element.style.width = 'max-content'
+        element.style.position = strategy
+        element.style.left = `${x}px`
+        element.style.top = `${y}px`
+    })
 }

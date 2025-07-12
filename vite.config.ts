@@ -9,7 +9,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      'vue3-emoji-picker/dist/style.css': path.resolve(__dirname, 'node_modules/vue3-emoji-picker/dist/style.css')
+      'vue3-emoji-picker/dist/style.css': path.resolve(__dirname, 'node_modules/vue3-emoji-picker/dist/style.css'),
+      'tippy.js/dist/tippy.css': path.resolve(__dirname, 'node_modules/tippy.js/dist/tippy.css')
     }
   },
 })

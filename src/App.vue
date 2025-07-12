@@ -63,7 +63,7 @@
 </template>
 
 <script setup lang="ts">
-import { useEditor, EditorContent, BubbleMenu } from '@tiptap/vue-3'
+import { useEditor, EditorContent, BubbleMenu, VueRenderer } from '@tiptap/vue-3'
 import { computed, onBeforeUnmount, ref, } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 import Underline from '@tiptap/extension-underline'
@@ -98,7 +98,10 @@ import js from 'highlight.js/lib/languages/javascript'
 import ts from 'highlight.js/lib/languages/typescript'
 import xml from 'highlight.js/lib/languages/xml'
 import Mention from '@tiptap/extension-mention'
-import suggestion from './suggestion'
+import { mentionSuggest, updatePosition } from './composables/suggestion'
+import { MentionList } from './components/ui/mention'
+import { useTippy, useTippyComponent, useSingleton } from 'vue-tippy'
+
 const lowlight = createLowlight(all)
 lowlight.register('html', xml)
 lowlight.register('css', css)
@@ -123,8 +126,8 @@ const editor = useEditor({
     TextStyle,
     Color,
     Emoji,
-    Highlight.configure({ multicolor: true }),
     FloatingMenu,
+    Highlight.configure({ multicolor: true }),
     Link.configure({
       openOnClick: false,
       autolink: true,
@@ -143,7 +146,44 @@ const editor = useEditor({
     }),
     Mention.configure({
       HTMLAttributes: { class: 'mention' },
-      suggestion
+      deleteTriggerWithBackspace: true,
+      suggestion: {
+        items: mentionSuggest,
+        render: () => {
+          let component: any;
+          return {
+            onStart: props => {
+              component = new VueRenderer(MentionList, {
+                props,
+                editor: props.editor
+              })
+
+              if (!props.clientRect) return
+              component.element.style.position = 'absolute'
+              document.body.appendChild(component.element)
+              updatePosition(props.editor as any, component.element)
+            },
+            onUpdate(props) {
+              component.updateProps(props)
+              if (!props.clientRect) {
+                return
+              }
+              updatePosition(props.editor as any, component.element)
+            },
+            onKeyDown(props) {
+              if (props.event.key === 'Escape') {
+                component.destroy()
+                return true
+              }
+              return component.ref?.onKeyDown(props)
+            },
+            onExit() {
+              component.element.remove()
+              component.destroy()
+            },
+          }
+        }
+      }
     })
   ],
   onSelectionUpdate({ editor }) {
