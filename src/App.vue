@@ -237,7 +237,6 @@ const linkInputUrl = ref('');
 
 const toggleLinkInput = (visible: boolean = false) => {
   showLinkInput.value = visible;
-  console.log(`link input set to`, visible)
 }
 
 const setLinkInputUrl = (url: string) => {

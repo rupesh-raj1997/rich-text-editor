@@ -20,14 +20,14 @@ Allows you to insert an image into the comment.
 Eraser Icon – Remove Formatting or Clear Content
 Likely clears all formatting or deletes the current content.
 
+Link Icon – Insert Link
+Adds a hyperlink to selected text.
+
+
 
 ## TODO
 10▼ – Font Size Dropdown
 Lets you select the font size.
-
-
-Link Icon – Insert Link
-Adds a hyperlink to selected text.
 
 Table Icon – Insert Table Lets you add a table.
 
