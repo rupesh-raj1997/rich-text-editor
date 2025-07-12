@@ -1,8 +1,5 @@
 <template>
   <template v-if="editor">
-    <BubbleMenu :editor="editor" :should-show="shouldShow" class="bg-white border rounded shadow-lg p-4">
-      <AttachedLinkUrl :linkInputUrl="linkInputUrl" />
-    </BubbleMenu>
     <input class="hidden" ref="fileInputRef" type="file" accept="image/*" @change="handleFileChange" />
     <div class="flex items-center justify-center h-screen  bg-gray-300 p-4">
       <Card class="w-full max-w-2xl">
@@ -10,6 +7,15 @@
           <div v-for="({ icon, click, name }, idx) in headerIcons" :key="idx">
             <component :is="icon" @click="click" class="hover:border mr-2" role="button"
               :class="{ 'bg-gray-200 rounded': editor?.isActive(name) }" />
+          </div>
+
+          <!-- text link button -->
+          <div class="relative">
+            <LinkIcon @click="toggleLinkInput(true)" class="hover:border mr-2"
+              :class="{ 'bg-gray-200 rounded': editor?.isActive('link') }" />
+            <div ref="linkInputRef" class="absolute top-8 z-1 w-max">
+              <AttachedLinkUrl v-if="showLinkInput" :link-input-url="linkInputUrl" @save="setLinkInputUrl" />
+            </div>
           </div>
 
           <!-- text color button -->
@@ -63,7 +69,7 @@
 </template>
 
 <script setup lang="ts">
-import { useEditor, EditorContent, BubbleMenu, VueRenderer } from '@tiptap/vue-3'
+import { useEditor, EditorContent, VueRenderer } from '@tiptap/vue-3'
 import { computed, onBeforeUnmount, ref, } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 import Underline from '@tiptap/extension-underline'
@@ -100,7 +106,6 @@ import xml from 'highlight.js/lib/languages/xml'
 import Mention from '@tiptap/extension-mention'
 import { mentionSuggest, updatePosition } from './composables/suggestion'
 import { MentionList } from './components/ui/mention'
-import { useTippy, useTippyComponent, useSingleton } from 'vue-tippy'
 
 const lowlight = createLowlight(all)
 lowlight.register('html', xml)
@@ -213,10 +218,8 @@ const headerIcons = computed(() => {
     { name: 'bulletList', icon: List, click: () => editor.value?.chain().focus().toggleBulletList().run() },
     { name: 'orderedList', icon: ListOrdered, click: () => editor.value?.chain().focus().toggleOrderedList().run() },
     { name: 'eraser', icon: Eraser, click: () => editor.value?.chain().focus().unsetAllMarks().clearNodes().run() },
-    { name: 'link', icon: LinkIcon, click: () => openLinkInputBubble() },
     { name: 'image', icon: ImageIcon, click: () => triggerImageUpload() },
     { name: 'codeBlock', icon: CodeXml, click: () => editor.value?.chain().focus().toggleCodeBlock().run() },
-    // { name: 'table', icon: Sheet, click: () => { } },
   ]
 })
 
@@ -228,15 +231,26 @@ const footerIcons = [
 
 
 // LINK UPLOAD VARS
+const linkInputRef = ref<HTMLElement | null>(null)
+const showLinkInput = ref(false)
 const linkInputUrl = ref('');
-const shouldShow = (props: any) => {
-  return props.editor.isActive('link')
-}
-const openLinkInputBubble = () => {
-  if (!editor.value) return null;
-  editor.value.chain().focus().extendMarkRange('link').setLink({ href: '' }).run()
 
+const toggleLinkInput = (visible: boolean = false) => {
+  showLinkInput.value = visible;
+  console.log(`link input set to`, visible)
 }
+
+const setLinkInputUrl = (url: string) => {
+  if (url) {
+    editor.value?.chain().focus().extendMarkRange('link').setLink({ href: url }).run()
+  } else {
+    editor.value?.chain().focus().extendMarkRange('link').unsetLink().run()
+  }
+  showLinkInput.value = false;
+  linkInputUrl.value = '';
+}
+
+onClickOutside(linkInputRef, () => toggleLinkInput(false))
 
 // Image ADD VARS
 const fileInputRef = ref<HTMLElement | null>(null);
@@ -277,7 +291,6 @@ const setColor = (color: string, type: 'color' | 'highlight') => {
   if (!editor.value) return
   if (type === 'color') editor.value?.chain().focus().setColor(color).run();
   else if (type === 'highlight') editor.value?.chain().focus().setHighlight({ color }).run()
-
 }
 
 // Emoji Picker vars
