@@ -1,4 +1,4 @@
-import { Editor, posToDOMRect, VueRenderer } from "@tiptap/vue-3"
+import { Editor, posToDOMRect } from "@tiptap/vue-3"
 import { computePosition, flip, shift } from '@floating-ui/dom'
 
 const USERS = [
