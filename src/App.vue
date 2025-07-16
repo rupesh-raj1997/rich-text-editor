@@ -28,9 +28,12 @@ import Toolbar from './components/ui/editor/Toolbar.vue'
 import { useJuvlitEditor } from './composables/useJuvlitEditor'
 
 const editorContainer = ref<HTMLElement | null>(null);
+
 const { editor } = useJuvlitEditor({
-  suggest: mentionSuggest
+  suggest: mentionSuggest,
 })
+
+// const editor = computed(() => juvlitEditor)
 </script>
 
 

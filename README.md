@@ -1,3 +1,35 @@
+
+# Juvlit Rich Text Editor Library
+
+## Installation
+
+```sh
+npm install juvlit-text-editor
+```
+
+## Usage
+
+### Register globally (recommended)
+
+```ts
+import { createApp } from 'vue';
+import JuvlitEditor from 'juvlit-text-editor';
+import 'vue3-emoji-picker/dist/style.css';
+import 'vue3-colorpicker/style.css';
+import 'tippy.js/dist/tippy.css';
+
+const app = createApp(App);
+app.use(JuvlitEditor);
+```
+
+### Import individual components/composables
+
+```ts
+import { Toolbar, useJuvlitEditor } from 'juvlit-text-editor';
+```
+
+---
+
 ### Rich text editor new features
 
 ## Done

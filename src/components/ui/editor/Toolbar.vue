@@ -43,14 +43,8 @@
     </div>
 </template>
 
-<script lang="ts">
-export default defineComponent({
-    name: 'Toolbar'
-})
-</script>
-
 <script setup lang="ts">
-import { computed, defineComponent } from 'vue';
+import { computed } from 'vue';
 import {
     Underline as UnderlineIcon, Bold, Italic, List, Eraser,
     Link as LinkIcon, ListOrdered, Image as ImageIcon, SmilePlus as SmileIcon,
@@ -61,6 +55,7 @@ import AttachedLinkUrl from '@/AttachedLinkUrl.vue';
 import { onClickOutside } from '@vueuse/core'
 import { ref } from 'vue';
 import EmojiPicker, { EmojiExt } from 'vue3-emoji-picker'
+import { ColorPicker } from "vue3-colorpicker";
 
 
 const props = defineProps<{ editor: Editor }>()

@@ -2,26 +2,20 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import path from "path"
 import tailwindcss from "@tailwindcss/vite"
+import dts from 'vite-plugin-dts'
 
-// https://vite.dev/config/
 export default defineConfig({
-  plugins: [vue(), tailwindcss()],
+  plugins: [vue(), tailwindcss(), dts({ include: ['src/types'] })],
   build: {
     lib: {
-      entry: path.resolve(__dirname, 'src/index.ts'),
       name: 'JuvlitEditor',
-      fileName: (format) => `juvlit-editor-lib.${format}.js`
+      entry: path.resolve(__dirname, 'src/library/main.ts'),
+      formats: ['es'],
+      fileName: (format) => `juvlit-editor.${format}.js`
     },
     rollupOptions: {
       external: [
         'vue',
-        '@tiptap/vue-3',
-        '@tiptap/starter-kit',
-        'vue3-emoji-picker',
-        'vue3-colorpicker',
-        'lucide-vue-next',
-        'highlight.js',
-        '@vueuse/core',
       ],
     }
   },

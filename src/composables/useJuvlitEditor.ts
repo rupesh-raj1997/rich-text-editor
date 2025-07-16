@@ -1,4 +1,3 @@
-import { onBeforeUnmount } from 'vue'
 import { Extensions, useEditor, VueRenderer } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
@@ -16,8 +15,8 @@ import js from 'highlight.js/lib/languages/javascript'
 import ts from 'highlight.js/lib/languages/typescript'
 import xml from 'highlight.js/lib/languages/xml'
 import Mention from '@tiptap/extension-mention'
-import { updatePosition } from './suggestion'
-import { MentionList } from '@/components/ui/mention'
+import { updatePosition } from './suggestion.js'
+import MentionList from '@/components/ui/mention/MentionList.vue'
 import { EditorProps } from '@tiptap/pm/view'
 
 const lowlight = createLowlight(all)
@@ -30,7 +29,8 @@ interface JuvlitEditorOptions {
     editorProps?: EditorProps,
     extensions?: Extensions
     content?: string,
-    suggest?: ({ query }: { query: string }) => string[]
+    suggest?: ({ query }: { query: string }) => string[],
+    placeholder?: string
 }
 
 export function useJuvlitEditor(options: JuvlitEditorOptions) {
@@ -107,10 +107,6 @@ export function useJuvlitEditor(options: JuvlitEditorOptions) {
             }),
 
         ],
-    })
-
-    onBeforeUnmount(() => {
-        editor.value?.destroy()
     })
 
     return { editor }
